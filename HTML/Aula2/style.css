@@ -5,7 +5,7 @@
 
 /* Seletor de Elemento */
 h3{
-    color: yellow;
+    color: blueviolet;
     font-weight: 100; 
 }
 
@@ -30,4 +30,32 @@ h3{
         color: red;
         font-size: medium;
         text-align: end;
+    }
+
+    .box{
+        /* define a largura */
+        width: 200px;
+        /* define a altura */
+        height: 200px;
+        /* Define o espaço externo - margem */
+        margin: 10px;
+        /* Define o espaço interno */
+        padding: 10px;
+        /* Define a borda */
+        border: 1px solid black;
+    }
+
+    .position{
+        /* A forma de posicionamento */
+        display: flex;
+        /* Posicionar venticalmente */
+        align-items: center;
+        /* Psocionar horizontalmente */
+        justify-content: center;        
+    }
+
+    .position2{
+        position: absolute;
+        top: 10px;
+        right: 10px;
     }
