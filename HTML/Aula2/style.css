@@ -1,0 +1,33 @@
+/* seletor de todos os elementos */
+    *{
+        margin: 0;
+    }
+
+/* Seletor de Elemento */
+h3{
+    color: yellow;
+    font-weight: 100; 
+}
+
+/* Seletor de classe */
+.texto{
+    /* alterá a cor do texto */
+    color: brown;
+    /* altera o tamanho do texto */
+    font-size: large;
+    /* altera a posição dp texto horizontalmente */
+    text-align: center;
+    /* Define a fonte do texto */
+    font-family: impact;
+    /* defone o peso do texto */
+    font-weight: 100;
+    /* altera a decoração do texto */
+    text-decoration: underline;
+}
+
+    /* Seletor de Id */
+    #texto{
+        color: red;
+        font-size: medium;
+        text-align: end;
+    }
