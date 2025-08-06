@@ -59,3 +59,39 @@ h3{
         top: 10px;
         right: 10px;
     }
+
+    body{
+        /* altera a cor do fundo */
+        background-color: blueviolet;
+        background-image: url("https://media.tenor.com/EhfeRr7-yvEAAAAe/gato-preto-leite.png");
+        /* Define a repetição das imagens no fundo */
+        background-repeat: no-repeat;
+        background-position-x: center;
+        background-position-y: center;
+        background-size: 100vw 160vh;
+    }
+
+    .visuais{
+        background-color: rgb(196, 8, 8);
+        /* define aopacidade do elemento */
+        opacity: 50%;
+        /* adiciona sombra -y,x,blur, spreand */
+        box-shadow: 10px 10px 10px 10px;
+        /* arredonda o elemento */
+        border-radius: 80px;
+        transform: rotate(1turn);
+        transition: width 2s 2s, heigth 2s 2s, transform 2s;
+
+    }
+
+    .visuais:hover{
+        width: 300px;
+        background-color: darkblue;
+        transform: rotate(10turn);
+    }
+
+    .cursor{
+        /* controla o scoll do elemento */
+        overflow: scroll;
+        cursor: pointer;
+    }
