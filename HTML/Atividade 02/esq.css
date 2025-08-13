@@ -1,0 +1,52 @@
+*{
+    margin: 0;
+}
+
+body{
+    background-color: rgb(255, 255, 255);
+    background-image: url("https://mirassolconectada.com.br/wp-content/uploads/2020/06/f0e3e437-8f29-4629-a1d4-748a7e4bce27.jpg");
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-size: 100vw 60vh;
+
+}
+
+.cursor{
+    /* controla o scoll do elemento */
+    overflow: scroll;
+    cursor: pointer;
+}
+
+.box{
+    /* define a largura */
+    width: 200px;
+    /* define a altura */
+    height: 200px;
+    /* Define o espaço externo - margem */
+    margin: 10px;
+    /* Define o espaço interno */
+    padding: 10px;
+    /* Define a borda */
+    border: 1px solid black;
+}
+
+.texto{
+    /* alterá a cor do texto */
+    color: rgb(255, 255, 255);
+    /* altera o tamanho do texto */
+    font-size: large;
+    /* altera a posição dp texto horizontalmente */
+    text-align: center;
+    /* Define a fonte do texto */
+    font-family: impact;
+    /* defone o peso do texto */
+    font-weight: 100;
+}
+
+.imagem{
+
+}
+
+.imagem-container{
+    
+}
