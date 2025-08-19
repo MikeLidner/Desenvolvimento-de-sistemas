@@ -3,18 +3,23 @@
 }
 
 body{
-    background-color: rgb(255, 255, 255);
-    background-image: url("https://mirassolconectada.com.br/wp-content/uploads/2020/06/f0e3e437-8f29-4629-a1d4-748a7e4bce27.jpg");
+    background-color: rgb(2, 1, 1);
     background-repeat: no-repeat;
     background-position-x: center;
     background-size: 100vw 60vh;
 
 }
 
+#id{
+    display: flex;
+    justify-content: start;
+}
+
 .cursor{
     /* controla o scoll do elemento */
     overflow: scroll;
-    cursor: pointer;
+    height: 400px;
+    width: 400px;
 }
 
 .box{
@@ -27,7 +32,7 @@ body{
     /* Define o espaço interno */
     padding: 10px;
     /* Define a borda */
-    border: 1px solid black;
+    border: 1px solid rgb(255, 255, 255);
 }
 
 .texto{
@@ -36,7 +41,7 @@ body{
     /* altera o tamanho do texto */
     font-size: large;
     /* altera a posição dp texto horizontalmente */
-    text-align: center;
+    text-align: left;
     /* Define a fonte do texto */
     font-family: impact;
     /* defone o peso do texto */
@@ -44,9 +49,26 @@ body{
 }
 
 .imagem{
-
+    width: 300px;
+    height: 300px;
+    border: 6px solid rgb(245, 245, 245);
 }
 
-.imagem-container{
-    
+.position{
+    /* A forma de posicionamento */
+    display: flex;
+    /* Psocionar horizontalmente */
+    justify-content: space-around;
+    transform: translate(0);
+    object-fit: cover;
 }
+
+.descritionName{
+     /* A forma de posicionamento */
+     display: flex;
+     /* Posicionar venticalmente */
+     align-items: top;
+     /* Psocionar horizontalmente */
+     justify-content: left;   
+}
+
