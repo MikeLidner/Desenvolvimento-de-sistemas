@@ -4,9 +4,10 @@
 
 body{
     background-color: rgb(2, 1, 1);
+    background-image: url("https://t4.ftcdn.net/jpg/04/45/28/31/360_F_445283148_29ffw9Oyv8MPBSfDpzZR3rpIGTXWaDYV.jpg");
     background-repeat: no-repeat;
     background-position-x: center;
-    background-size: 100vw 60vh;
+    background-size: 100vw 80vh;
 
 }
 
@@ -24,28 +25,31 @@ body{
 
 .box{
     /* define a largura */
-    width: 200px;
+    width: 33vw;
     /* define a altura */
-    height: 200px;
-    /* Define o espaço externo - margem */
-    margin: 10px;
+    height: 30vw;
     /* Define o espaço interno */
-    padding: 10px;
+    padding: 1vw;
     /* Define a borda */
-    border: 1px solid rgb(255, 255, 255);
+    border: 5px solid rgb(255, 255, 255);
+    margin-right: auto;
+    margin-top: 20%;
+    
+
 }
 
 .texto{
     /* alterá a cor do texto */
     color: rgb(255, 255, 255);
     /* altera o tamanho do texto */
-    font-size: large;
+    font-size: 20px;
     /* altera a posição dp texto horizontalmente */
     text-align: left;
     /* Define a fonte do texto */
     font-family: impact;
     /* defone o peso do texto */
     font-weight: 100;
+    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black, -2px 2px 0px black;
 }
 
 .imagem{
@@ -57,18 +61,28 @@ body{
 .position{
     /* A forma de posicionamento */
     display: flex;
-    /* Psocionar horizontalmente */
-    justify-content: space-around;
-    transform: translate(0);
-    object-fit: cover;
+    position: absolute;
+    top: 8%;
+    left: 6%;
+    
+}
+.itemName{
+    margin-right: 1vw;
+    position: absolute;
+    left: 60%;
 }
 
 .descritionName{
-     /* A forma de posicionamento */
-     display: flex;
-     /* Posicionar venticalmente */
-     align-items: top;
-     /* Psocionar horizontalmente */
-     justify-content: left;   
+    margin-right: 1vw;
+    position: absolute;
+    left: 1%;
 }
 
+.h1{
+    font-size: 100px;
+    color: rgb(255, 255, 255);
+    text-shadow: 2px 2px 0px black, -2px -2px 0px black, 2px -2px 0px black, -2px 2px 0px black;
+    position: absolute;
+    left: 30%;
+    margin-top: 1%;
+}
