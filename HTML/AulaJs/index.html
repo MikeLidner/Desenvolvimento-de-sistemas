@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        //Não utilizar nesse lugar
+    </script>
+</head>
+<body>
+    <p id="Paragrafo">Script que escreve ola:</p>
+    <p id="id">Seletor de Id</p>
+    <p class="classe">Seletor de classe 1</p>
+    <p class="classe">Seletor de classe 2</p>
+    <h1 id = "text">Text</h1>
+    <div id="div">
+        Texto de exemplo
+    </div>
+
+    <img id="bolo" src ="https://cdn.shoppub.io/cdn-cgi/image/w=1000,h=1000,q=80,f=auto/beirario/media/uploads/produtos/foto/kidtfesb/file.jpg">
+    
+
+    <button id="fundo">trocar a cor de Fundo</button>
+    ,<button onclick="trocar()"> troca de fundo 2 </button>
+    <!-- <button id="fundou"> trocar a cor para branco</button> -->
+
+
+
+    <script>
+        console.log("Hello Word!");
+       // console.warn("Aviso!");
+        //console.error("Erro!");
+
+        document.write("Olá");
+
+        //Seleção de elementos
+        //por Id
+        const p = document.getElementById("Paragrafo");
+        console.log(p);
+        //Por seleor CSS
+        const id = document.querySelector("#id");
+        const classe = document.querySelector(".classe");
+        console.log(id);
+        console.log(classe);
+        const classes = document.querySelectorAll(".classe");
+        console.log(classes);
+        console.log(id.innerText);
+
+        //Manipulação de HTML
+        let text = document.getElementById("text");
+        console.log(text.textContent);
+        text.textContent = "Hello world Manipulado!"
+
+        //ALtera o html de dentro do elemento
+        let div = document.getElementById("div");
+        console.log(div.innerHTML);
+        div.innerHTML = "<h3>Manipulção de html</h3><button>text</button>";
+        console.log(div.innerHTML);
+
+        //Manipulção de atributos
+        let imgBolo = document.getElementById("bolo");
+        console.log(imgBolo.getAttribute("src"));
+        imgBolo.setAttribute("src", "https://pbs.twimg.com/media/Fnp0FNcWYAAo3Ss.jpg");
+        imgBolo.setAttribute("alt", "Imagen de um kurt");
+
+        //Remover atributos
+        imgBolo.removeAttribute("alt");
+
+
+        ///Manipulação do Css
+        imgBolo.style.borderRadius = "100px"
+        imgBolo.style.border = "5px solid black"
+
+        //Eventos
+        //let fundou = document.getElementById("fundou");
+       // document.body.style.backgroundColor="white"
+
+        let fundo = document.getElementById("fundo");
+        let troca = true;
+        fundo.addEventListener("click", () =>{
+            if(troca){
+                document.body.style.backgroundColor="blue"
+                troca = false;
+            } else {
+            document.body.style.backgroundColor="red"
+            troca = true
+        }
+        });
+
+        function trocar(){
+            document.body.style.backgroundColor="green";
+        }
+    </script>
+    <!-- <script src="script.js"></script> -->
+</body>
+</html>
