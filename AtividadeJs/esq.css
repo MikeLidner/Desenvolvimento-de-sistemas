@@ -1,0 +1,26 @@
+*{
+    margin: 0;
+}
+
+
+.h1{
+    position: absolute;
+    right: 45%;
+    margin-top: 1%;
+}
+
+.p{
+    position: absolute;
+    margin-top: 4%;
+}
+.button{
+    position: absolute;
+    margin-top: 8%;
+    right: 50%;
+}
+
+.button2{
+    position: absolute;
+    margin-top: 10%;
+    right: 50%;
+}
