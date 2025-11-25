@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamentos</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body onload="init()">
+
+<div class="nav">
+    <div>Agendamentos</div>
+    <div class="nav-right">
+        <a href="home.html">Home</a>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Novo Agendamento</h2>
+
+    <select id="client"></select>
+    <select id="service"></select>
+    <select id="professional"></select>
+
+    <input type="datetime-local" id="date">
+    <input type="number" id="duration" placeholder="Duração (minutos)" />
+
+    <button class="btn" onclick="createAppointment()">Agendar</button>
+
+    <h2>Lista de Agendamentos</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Profissional</th>
+                <th>Serviço</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="appointList"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="assets/script.js"></script>
+<script>
+
+async function init() {
+    requireAuth();
+    await loadSelects();
+    await loadAppointments();
+}
+
+async function loadSelects() {
+    const clients = await api("/clients");
+    const services = await api("/services");
+    const professionals = await api("/professionals");
+
+    clients.forEach(c => client.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+    services.forEach(s => service.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    professionals.forEach(p => professional.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+}
+
+async function createAppointment() {
+    const res = await api("/appointments", "POST", {
+        clientId: client.value,
+        serviceId: service.value,
+        professionalId: professional.value,
+        date: date.value,
+        duration: duration.value
+    });
+
+    if (res.error) return alert(res.error);
+
+    alert("Agendamento criado!");
+    loadAppointments();
+}
+
+async function loadAppointments() {
+    const data = await api("/appointments");
+
+    appointList.innerHTML = "";
+
+    data.forEach(a => {
+        appointList.innerHTML += `
+            <tr>
+                <td>${a.client}</td>
+                <td>${a.professional}</td>
+                <td>${a.service}</td>
+                <td>${new Date(a.date).toLocaleString()}</td>
+                <td>${a.status}</td>
+                <td>
+                    <button class="btn" onclick="updateStatus(${a.id}, 'concluído')">Concluir</button>
+                    <button class="btn-danger" onclick="updateStatus(${a.id}, 'cancelado')">Cancelar</button>
+                </td>
+            </tr>`;
+    });
+}
+
+async function updateStatus(id, status) {
+    await api(`/appointments/${id}/status`, "PATCH", { status });
+    loadAppointments();
+}
+
+</script>
+
+</body>
+</html>

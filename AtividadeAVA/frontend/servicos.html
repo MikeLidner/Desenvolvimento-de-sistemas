@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviços</title>
+    <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body onload="loadServices()">
+
+<div class="nav">
+    <div>Serviços</div>
+    <div class="nav-right">
+        <a href="home.html">Home</a>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Cadastrar Serviço</h2>
+
+    <input id="s_name" placeholder="Nome do serviço" />
+    <input id="s_duration" type="number" placeholder="Duração (minutos)" />
+
+    <button class="btn" onclick="createService()">Salvar</button>
+
+    <h2>Lista</h2>
+
+    <input id="search" placeholder="Buscar..." oninput="loadServices()" />
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Duração</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="assets/script.js"></script>
+<script>
+
+requireAuth();
+
+async function loadServices() {
+    const search = document.getElementById("search").value;
+    const data = await api(`/services?search=${search}`);
+
+    const tbody = document.getElementById("list");
+    tbody.innerHTML = "";
+
+    data.forEach(s => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${s.name}</td>
+                <td>${s.duration} min</td>
+                <td>
+                    <button class="btn" onclick="editService(${s.id})">Editar</button>
+                    <button class="btn-danger" onclick="delService(${s.id})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function createService() {
+    const res = await api("/services", "POST", {
+        name: s_name.value,
+        duration: s_duration.value
+    });
+    alert("Serviço cadastrado!");
+    loadServices();
+}
+
+async function delService(id) {
+    if (!confirm("Deseja excluir?")) return;
+    await api("/services/" + id, "DELETE");
+    loadServices();
+}
+
+</script>
+
+</body>
+</html>

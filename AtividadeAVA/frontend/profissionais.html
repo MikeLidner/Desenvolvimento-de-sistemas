@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Profissionais</title>
+    <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body onload="loadProfessionals()">
+
+<div class="nav">
+    <div>Profissionais</div>
+    <div class="nav-right">
+        <a href="home.html">Home</a>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Cadastrar Profissional</h2>
+
+    <input id="p_name" placeholder="Nome do profissional" />
+
+    <button class="btn" onclick="createProfessional()">Salvar</button>
+
+    <h2>Lista</h2>
+
+    <input id="search" placeholder="Buscar..." oninput="loadProfessionals()" />
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Profissional</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="assets/script.js"></script>
+<script>
+
+requireAuth();
+
+async function loadProfessionals() {
+    const search = document.getElementById("search").value;
+    const data = await api(`/professionals?search=${search}`);
+
+    const tbody = document.getElementById("list");
+    tbody.innerHTML = "";
+
+    data.forEach(p => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${p.name}</td>
+                <td>
+                    <button class="btn" onclick="editProfessional(${p.id})">Editar</button>
+                    <button class="btn-danger" onclick="delProfessional(${p.id})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function createProfessional() {
+    const res = await api("/professionals", "POST", {
+        name: p_name.value
+    });
+    alert("Profissional cadastrado!");
+    loadProfessionals();
+}
+
+async function delProfessional(id) {
+    if (!confirm("Deseja excluir?")) return;
+    await api("/professionals/" + id, "DELETE");
+    loadProfessionals();
+}
+
+</script>
+
+</body>
+</html>

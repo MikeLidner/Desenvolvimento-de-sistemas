@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes</title>
+    <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body onload="loadClients()">
+
+<div class="nav">
+    <div>Clientes</div>
+    <div class="nav-right">
+        <a href="home.html">Home</a>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Cadastrar Cliente</h2>
+
+    <input id="c_name" placeholder="Nome" />
+    <input id="c_phone" placeholder="Telefone" />
+    <input id="c_address" placeholder="Endereço" />
+
+    <button class="btn" onclick="createClient()">Salvar</button>
+
+    <h2>Lista</h2>
+
+    <input id="search" placeholder="Buscar..." oninput="loadClients()" />
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Endereço</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="assets/script.js"></script>
+<script>
+requireAuth();
+
+async function loadClients() {
+    const search = document.getElementById("search").value;
+    const data = await api("/clients?search=" + search);
+
+    const tbody = document.getElementById("list");
+    tbody.innerHTML = "";
+
+    data.forEach(c => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.name}</td>
+                <td>${c.phone || ""}</td>
+                <td>${c.address || ""}</td>
+                <td>
+                    <button class="btn" onclick="editClient(${c.id})">Editar</button>
+                    <button class="btn-danger" onclick="delClient(${c.id})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function createClient() {
+    const name = document.getElementById("c_name").value;
+
+    const res = await api("/clients", "POST", {
+        name,
+        phone: document.getElementById("c_phone").value,
+        address: document.getElementById("c_address").value
+    });
+
+    alert("Cliente cadastrado!");
+    loadClients();
+}
+
+async function delClient(id) {
+    if (!confirm("Deseja excluir?")) return;
+    await api("/clients/" + id, "DELETE");
+    loadClients();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body onload="loadUser()">
+
+<div class="nav">
+    <div class="nav-left">
+        <strong>Bem-vindo, <span id="username"></span></strong>
+    </div>
+    <div class="nav-right">
+        <a href="clientes.html">Clientes</a>
+        <a href="servicos.html">Serviços</a>
+        <a href="profissionais.html">Profissionais</a>
+        <a href="agendamentos.html">Agendamentos</a>
+        <a href="#" onclick="logout()">Sair</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Painel do Sistema</h1>
+</div>
+
+<script src="assets/script.js"></script>
+<script>
+requireAuth();
+
+async function loadUser() {
+    const user = await api("/auth/me");
+    document.getElementById("username").innerText = user.name;
+}
+</script>
+
+</body>
+</html>
