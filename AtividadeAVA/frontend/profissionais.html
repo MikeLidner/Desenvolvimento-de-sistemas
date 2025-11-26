@@ -1,85 +1,91 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Profissionais</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
 </head>
-<body onload="loadProfessionals()">
+<body>
 
-<div class="nav">
-    <div>Profissionais</div>
-    <div class="nav-right">
-        <a href="home.html">Home</a>
-        <a href="#" onclick="logout()">Sair</a>
-    </div>
+<h2>Cadastro de Profissionais</h2>
+
+<input id="busca" placeholder="Buscar..." onkeyup="carregar()">
+
+<div class="card">
+    <input id="nome" placeholder="Nome do profissional">
+    <input id="especialidade" placeholder="Especialidade">
+    <button onclick="salvar()">Salvar</button>
 </div>
 
-<div class="container">
+<h3>Profissionais cadastrados</h3>
 
-    <h2>Cadastrar Profissional</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Profissional</th>
+            <th>Especialidade</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+</table>
 
-    <input id="p_name" placeholder="Nome do profissional" />
+<button onclick="window.location='index.html'">Voltar</button>
 
-    <button class="btn" onclick="createProfessional()">Salvar</button>
-
-    <h2>Lista</h2>
-
-    <input id="search" placeholder="Buscar..." oninput="loadProfessionals()" />
-
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <th>Profissional</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody id="list"></tbody>
-        </table>
-    </div>
-
-</div>
-
-<script src="assets/script.js"></script>
 <script>
+let editando = null;
 
-requireAuth();
+async function carregar() {
+    const termo = busca.value;
+    const profissionais = await apiGet("/profissionais?busca=" + termo);
 
-async function loadProfessionals() {
-    const search = document.getElementById("search").value;
-    const data = await api(`/professionals?search=${search}`);
-
-    const tbody = document.getElementById("list");
-    tbody.innerHTML = "";
-
-    data.forEach(p => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${p.name}</td>
-                <td>
-                    <button class="btn" onclick="editProfessional(${p.id})">Editar</button>
-                    <button class="btn-danger" onclick="delProfessional(${p.id})">Excluir</button>
-                </td>
-            </tr>
-        `;
-    });
+    lista.innerHTML = profissionais.map(p =>
+        `<tr>
+            <td>${p.id}</td>
+            <td>${p.nome}</td>
+            <td>${p.especialidade}</td>
+            <td>
+                <button onclick="editar(${p.id}, '${p.nome}', '${p.especialidade}')">Editar</button>
+                <button onclick="excluir(${p.id})">Excluir</button>
+            </td>
+        </tr>`
+    ).join("");
 }
 
-async function createProfessional() {
-    const res = await api("/professionals", "POST", {
-        name: p_name.value
-    });
-    alert("Profissional cadastrado!");
-    loadProfessionals();
+function editar(id, nome, especialidade) {
+    editando = id;
+    document.getElementById("nome").value = nome;
+    document.getElementById("especialidade").value = especialidade;
 }
 
-async function delProfessional(id) {
-    if (!confirm("Deseja excluir?")) return;
-    await api("/professionals/" + id, "DELETE");
-    loadProfessionals();
+async function excluir(id) {
+    await apiDelete("/profissionais/" + id);
+    carregar();
 }
 
+async function salvar() {
+    const obj = {
+        nome: nome.value,
+        especialidade: especialidade.value
+    };
+
+    if (!obj.nome) {
+        alert("Nome é obrigatório!");
+        return;
+    }
+
+    if (editando)
+        await apiPut("/profissionais/" + editando, obj);
+    else
+        await apiPost("/profissionais", obj);
+
+    editando = null;
+    nome.value = especialidade.value = "";
+    carregar();
+}
+
+carregar();
 </script>
 
 </body>

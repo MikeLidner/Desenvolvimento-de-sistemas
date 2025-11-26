@@ -1,42 +1,26 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Login</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <title>Painel Principal</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Sistema de Agendamentos</h1>
+<h2>Bem-vindo, <span id="usuario"></span>!</h2>
 
-    <input id="email" placeholder="E-mail" />
-    <input id="password" type="password" placeholder="Senha" />
+<button onclick="window.location='clientes.html'">Cadastro de Clientes</button>
+<button onclick="window.location='servicos.html'">Cadastro de Serviços</button>
+<button onclick="window.location='profissionais.html'">Cadastro de Profissionais</button>
+<button onclick="window.location='agendamentos.html'">Agendamentos</button>
 
-    <button class="btn" onclick="login()">Entrar</button>
-
-    <p id="msg"></p>
-</div>
+<button style="background:red;" onclick="logout()">Sair</button>
 
 <script>
-async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+document.getElementById("usuario").innerText = localStorage.getItem("nome");
 
-    const res = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location = "home.html";
-    } else {
-        document.getElementById("msg").innerText = data.error;
-    }
+function logout() {
+    localStorage.clear();
+    window.location = "login.html";
 }
 </script>
 

@@ -1,89 +1,96 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Serviços</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
 </head>
-<body onload="loadServices()">
+<body>
 
-<div class="nav">
-    <div>Serviços</div>
-    <div class="nav-right">
-        <a href="home.html">Home</a>
-        <a href="#" onclick="logout()">Sair</a>
-    </div>
+<h2>Cadastro de Serviços</h2>
+
+<input id="busca" placeholder="Buscar..." onkeyup="carregar()">
+
+<div class="card">
+    <input id="nome" placeholder="Nome do serviço">
+    <input id="duracao" placeholder="Duração (min)" type="number">
+    <input id="valor" placeholder="Valor (R$)" type="number" step="0.01">
+    <button onclick="salvar()">Salvar</button>
 </div>
 
-<div class="container">
+<h3>Serviços cadastrados</h3>
 
-    <h2>Cadastrar Serviço</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Serviço</th>
+            <th>Duração</th>
+            <th>Valor</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+</table>
 
-    <input id="s_name" placeholder="Nome do serviço" />
-    <input id="s_duration" type="number" placeholder="Duração (minutos)" />
+<button onclick="window.location='index.html'">Voltar</button>
 
-    <button class="btn" onclick="createService()">Salvar</button>
-
-    <h2>Lista</h2>
-
-    <input id="search" placeholder="Buscar..." oninput="loadServices()" />
-
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <th>Serviço</th>
-                <th>Duração</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody id="list"></tbody>
-        </table>
-    </div>
-
-</div>
-
-<script src="assets/script.js"></script>
 <script>
+let editando = null;
 
-requireAuth();
+async function carregar() {
+    const termo = busca.value;
+    const servicos = await apiGet("/servicos?busca=" + termo);
 
-async function loadServices() {
-    const search = document.getElementById("search").value;
-    const data = await api(`/services?search=${search}`);
-
-    const tbody = document.getElementById("list");
-    tbody.innerHTML = "";
-
-    data.forEach(s => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${s.name}</td>
-                <td>${s.duration} min</td>
-                <td>
-                    <button class="btn" onclick="editService(${s.id})">Editar</button>
-                    <button class="btn-danger" onclick="delService(${s.id})">Excluir</button>
-                </td>
-            </tr>
-        `;
-    });
+    lista.innerHTML = servicos.map(s =>
+        `<tr>
+            <td>${s.id}</td>
+            <td>${s.nome}</td>
+            <td>${s.duracao} min</td>
+            <td>R$ ${s.valor.toFixed(2)}</td>
+            <td>
+                <button onclick="editar(${s.id}, '${s.nome}', ${s.duracao}, ${s.valor})">Editar</button>
+                <button onclick="excluir(${s.id})">Excluir</button>
+            </td>
+        </tr>`
+    ).join("");
 }
 
-async function createService() {
-    const res = await api("/services", "POST", {
-        name: s_name.value,
-        duration: s_duration.value
-    });
-    alert("Serviço cadastrado!");
-    loadServices();
+function editar(id, nome, duracao, valor) {
+    editando = id;
+    document.getElementById("nome").value = nome;
+    document.getElementById("duracao").value = duracao;
+    document.getElementById("valor").value = valor;
 }
 
-async function delService(id) {
-    if (!confirm("Deseja excluir?")) return;
-    await api("/services/" + id, "DELETE");
-    loadServices();
+async function excluir(id) {
+    await apiDelete("/servicos/" + id);
+    carregar();
 }
 
+async function salvar() {
+    const obj = {
+        nome: nome.value,
+        duracao: Number(duracao.value),
+        valor: Number(valor.value)
+    };
+
+    if (!obj.nome || obj.duracao <= 0 || obj.valor <= 0) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+    }
+
+    if (editando)
+        await apiPut("/servicos/" + editando, obj);
+    else
+        await apiPost("/servicos", obj);
+
+    editando = null;
+    nome.value = duracao.value = valor.value = "";
+    carregar();
+}
+
+carregar();
 </script>
 
 </body>

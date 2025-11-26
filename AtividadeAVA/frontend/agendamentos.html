@@ -1,112 +1,110 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Agendamentos</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
 </head>
-<body onload="init()">
+<body>
 
-<div class="nav">
-    <div>Agendamentos</div>
-    <div class="nav-right">
-        <a href="home.html">Home</a>
-        <a href="#" onclick="logout()">Sair</a>
-    </div>
+<h2>Agendamentos</h2>
+
+<div class="card">
+    <select id="cliente"></select>
+    <select id="servico"></select>
+    <select id="profissional"></select>
+
+    <input type="datetime-local" id="data">
+    <input type="number" id="duracao" placeholder="Duração (min)">
+    
+    <button onclick="salvar()">Agendar</button>
 </div>
 
-<div class="container">
-    <h2>Novo Agendamento</h2>
+<h3>Lista de Agendamentos</h3>
 
-    <select id="client"></select>
-    <select id="service"></select>
-    <select id="professional"></select>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Profissional</th>
+            <th>Data</th>
+            <th>Duração</th>
+            <th>Status</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+</table>
 
-    <input type="datetime-local" id="date">
-    <input type="number" id="duration" placeholder="Duração (minutos)" />
+<button onclick="window.location='index.html'">Voltar</button>
 
-    <button class="btn" onclick="createAppointment()">Agendar</button>
-
-    <h2>Lista de Agendamentos</h2>
-
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Profissional</th>
-                <th>Serviço</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody id="appointList"></tbody>
-        </table>
-    </div>
-
-</div>
-
-<script src="assets/script.js"></script>
 <script>
+async function carregarListagens() {
+    const clientes = await apiGet("/clientes");
+    const servicos = await apiGet("/servicos");
+    const profissionais = await apiGet("/profissionais");
 
-async function init() {
-    requireAuth();
-    await loadSelects();
-    await loadAppointments();
+    cliente.innerHTML = clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
+    servico.innerHTML = servicos.map(s => `<option value="${s.id}">${s.nome}</option>`).join("");
+    profissional.innerHTML = profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join("");
 }
 
-async function loadSelects() {
-    const clients = await api("/clients");
-    const services = await api("/services");
-    const professionals = await api("/professionals");
+async function carregarAgendamentos() {
+    const listaAg = await apiGet("/agendamentos");
 
-    clients.forEach(c => client.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-    services.forEach(s => service.innerHTML += `<option value="${s.id}">${s.name}</option>`);
-    professionals.forEach(p => professional.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+    lista.innerHTML = listaAg.map(a =>
+        `<tr>
+            <td>${a.id}</td>
+            <td>${a.cliente}</td>
+            <td>${a.servico}</td>
+            <td>${a.profissional}</td>
+            <td>${new Date(a.data).toLocaleString()}</td>
+            <td>${a.duracao} min</td>
+            <td>${a.status}</td>
+            <td>
+                <select onchange="atualizarStatus(${a.id}, this.value)">
+                    <option ${a.status==='agendado'?'selected':''}>agendado</option>
+                    <option ${a.status==='concluído'?'selected':''}>concluído</option>
+                    <option ${a.status==='cancelado'?'selected':''}>cancelado</option>
+                </select>
+            </td>
+        </tr>`
+    ).join("");
 }
 
-async function createAppointment() {
-    const res = await api("/appointments", "POST", {
-        clientId: client.value,
-        serviceId: service.value,
-        professionalId: professional.value,
-        date: date.value,
-        duration: duration.value
-    });
-
-    if (res.error) return alert(res.error);
-
-    alert("Agendamento criado!");
-    loadAppointments();
+async function atualizarStatus(id, status) {
+    await apiPatch("/agendamentos/" + id + "/status", { status });
+    carregarAgendamentos();
 }
 
-async function loadAppointments() {
-    const data = await api("/appointments");
+async function salvar() {
+    const obj = {
+        clienteId: Number(cliente.value),
+        servicoId: Number(servico.value),
+        profissionalId: Number(profissional.value),
+        data: data.value,
+        duracao: Number(duracao.value)
+    };
 
-    appointList.innerHTML = "";
+    if (!obj.data || obj.duracao <= 0) {
+        alert("Preencha a data e duração corretamente!");
+        return;
+    }
 
-    data.forEach(a => {
-        appointList.innerHTML += `
-            <tr>
-                <td>${a.client}</td>
-                <td>${a.professional}</td>
-                <td>${a.service}</td>
-                <td>${new Date(a.date).toLocaleString()}</td>
-                <td>${a.status}</td>
-                <td>
-                    <button class="btn" onclick="updateStatus(${a.id}, 'concluído')">Concluir</button>
-                    <button class="btn-danger" onclick="updateStatus(${a.id}, 'cancelado')">Cancelar</button>
-                </td>
-            </tr>`;
-    });
+    const resp = await apiPost("/agendamentos", obj);
+
+    if (resp.erro) {
+        alert(resp.erro);
+        return;
+    }
+
+    carregarAgendamentos();
 }
 
-async function updateStatus(id, status) {
-    await api(`/appointments/${id}/status`, "PATCH", { status });
-    loadAppointments();
-}
-
+carregarListagens();
+carregarAgendamentos();
 </script>
 
 </body>

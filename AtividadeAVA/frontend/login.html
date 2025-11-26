@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+</head>
+<body>
+
+<div class="card">
+    <h2>Login</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="senha" type="password" placeholder="Senha">
+
+    <button onclick="login()">Entrar</button>
+
+    <p id="erro" style="color:red;"></p>
+</div>
+
+<script>
+async function login() {
+    const email = email.value;
+    const senha = senha.value;
+
+    const resp = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+    });
+
+    const data = await resp.json();
+
+    if (data.erro) {
+        document.getElementById("erro").innerText = data.erro;
+        return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("nome", data.nome);
+
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

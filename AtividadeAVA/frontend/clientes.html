@@ -1,94 +1,88 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Clientes</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
 </head>
-<body onload="loadClients()">
+<body>
 
-<div class="nav">
-    <div>Clientes</div>
-    <div class="nav-right">
-        <a href="home.html">Home</a>
-        <a href="#" onclick="logout()">Sair</a>
-    </div>
+<h2>Cadastro de Clientes</h2>
+
+<input id="busca" placeholder="Buscar..." onkeyup="carregar()">
+
+<div class="card">
+    <input id="nome" placeholder="Nome">
+    <input id="telefone" placeholder="Telefone">
+    <input id="endereco" placeholder="Endereço">
+    <button onclick="salvar()">Salvar</button>
 </div>
 
-<div class="container">
+<h3>Clientes cadastrados</h3>
 
-    <h2>Cadastrar Cliente</h2>
+<table>
+    <thead>
+        <tr><th>ID</th><th>Nome</th><th>Ações</th></tr>
+    </thead>
+    <tbody id="lista"></tbody>
+</table>
 
-    <input id="c_name" placeholder="Nome" />
-    <input id="c_phone" placeholder="Telefone" />
-    <input id="c_address" placeholder="Endereço" />
+<button onclick="window.location='index.html'">Voltar</button>
 
-    <button class="btn" onclick="createClient()">Salvar</button>
-
-    <h2>Lista</h2>
-
-    <input id="search" placeholder="Buscar..." oninput="loadClients()" />
-
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Telefone</th>
-                <th>Endereço</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody id="list"></tbody>
-        </table>
-    </div>
-
-</div>
-
-<script src="assets/script.js"></script>
 <script>
-requireAuth();
+let editando = null;
 
-async function loadClients() {
-    const search = document.getElementById("search").value;
-    const data = await api("/clients?search=" + search);
+async function carregar() {
+    const termo = busca.value;
+    const clientes = await apiGet("/clientes?busca=" + termo);
 
-    const tbody = document.getElementById("list");
-    tbody.innerHTML = "";
-
-    data.forEach(c => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${c.name}</td>
-                <td>${c.phone || ""}</td>
-                <td>${c.address || ""}</td>
-                <td>
-                    <button class="btn" onclick="editClient(${c.id})">Editar</button>
-                    <button class="btn-danger" onclick="delClient(${c.id})">Excluir</button>
-                </td>
-            </tr>
-        `;
-    });
+    lista.innerHTML = clientes.map(c =>
+        `<tr>
+            <td>${c.id}</td>
+            <td>${c.nome}</td>
+            <td>
+                <button onclick="editar(${c.id}, '${c.nome}', '${c.telefone}', '${c.endereco}')">Editar</button>
+                <button onclick="excluir(${c.id})">Excluir</button>
+            </td>
+        </tr>`
+    ).join("");
 }
 
-async function createClient() {
-    const name = document.getElementById("c_name").value;
-
-    const res = await api("/clients", "POST", {
-        name,
-        phone: document.getElementById("c_phone").value,
-        address: document.getElementById("c_address").value
-    });
-
-    alert("Cliente cadastrado!");
-    loadClients();
+function editar(id, nome, telefone, endereco) {
+    editando = id;
+    document.getElementById("nome").value = nome;
+    document.getElementById("telefone").value = telefone;
+    document.getElementById("endereco").value = endereco;
 }
 
-async function delClient(id) {
-    if (!confirm("Deseja excluir?")) return;
-    await api("/clients/" + id, "DELETE");
-    loadClients();
+async function excluir(id) {
+    await apiDelete("/clientes/" + id);
+    carregar();
 }
+
+async function salvar() {
+    const obj = {
+        nome: nome.value,
+        telefone: telefone.value,
+        endereco: endereco.value
+    };
+
+    if (!obj.nome) {
+        alert("Nome é obrigatório");
+        return;
+    }
+
+    if (editando)
+        await apiPut("/clientes/" + editando, obj);
+    else
+        await apiPost("/clientes", obj);
+
+    editando = null;
+    nome.value = telefone.value = endereco.value = "";
+    carregar();
+}
+
+carregar();
 </script>
 
 </body>
