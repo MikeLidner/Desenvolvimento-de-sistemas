@@ -2,6 +2,11 @@ const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+bcrypt.hash("1234", 10, (err, hash) => {
+    if (err) throw err;
+    console.log(hash);
+  });
+
 exports.login = async (req, res) => {
     try {
         const { email, senha } = req.body;
